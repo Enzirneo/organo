@@ -1,0 +1,101 @@
+.jogo {
+    text-align: center;
+    padding: 32px;
+    min-height: 350px;
+    margin-bottom: 24px;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    border-radius: 16px;
+    overflow: hidden;
+    color: white; /* Garante que o texto fique visível em cima da imagem */
+    transition: transform 0.5s ease;
+}
+
+.jogo:hover::before {
+    background-color: rgba(24, 24, 24, 0.699); /* fica mais escuro ao passar o mouse */
+    transition: background-color 0.5s ease;
+}
+
+/* ESCURECER A IMAGEM de fundo com overlay */
+.jogo::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.705); /* escurece a imagem */
+    z-index: 0;
+}
+
+.jogo h3 {
+    font-size: 32px;
+    border-bottom: 4px solid;
+    display: inline-block;
+    padding-bottom: 8px;
+    position: relative;
+    z-index: 1; /* Garante que o título fique acima da overlay */
+}
+
+.jogo .jogadores {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 32px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1; /* Garante que os jogadores fiquem acima da overlay */
+}
+
+.jogo-valorant {
+    background-position-y: 40%;
+}
+
+.jogo-valorant::before {
+    background-color: rgba(56, 8, 8, 0.452);
+}
+
+.jogo-league-of-legends {
+    background-position-y: 20%;
+}
+
+.jogo-league-of-legends::before {
+    background-color: rgba(8, 34, 75, 0.753);
+}
+
+.jogo-overwatch-2 {
+    background-position-y: 30%;
+}
+
+.jogo-overwatch-2::before {
+    background-color: rgba(126, 126, 126, 0.596);
+}
+
+.jogo-counter-strike-2 {
+    background-position-y: 20%;
+}
+
+.jogo-counter-strike-2::before {
+    background-color: rgba(95, 57, 4, 0.664); 
+}
+
+.jogo-dota-2 {
+    background-position-y: 15%;
+}
+
+.jogo-dota-2::before {
+    background-color: rgba(34, 33, 33, 0.699); 
+}
+
+.jogo-rocket-league {
+    background-position-y: 60%; 
+}
+
+.jogo-rocket-league::before {
+    background-color: rgba(9, 62, 131, 0.815); 
+}
+
+.jogo-marvel-rivals {
+    background-position-y: 40%; 
+}
+
+.jogo-marvel-rivals::before {
+    background-color: rgba(26, 25, 25, 0.788); 
+}
