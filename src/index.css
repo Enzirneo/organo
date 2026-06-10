@@ -1,14 +1,97 @@
-@import url('https://fonts.googleapis.com/css2?family=Prata&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
-body {
-  margin: 0;
-  font-family: 'Montserrat', serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: rgb(36, 36, 36);
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 160 14% 6%;
+    --foreground: 150 20% 96%;
+
+    --card: 160 14% 9%;
+    --card-foreground: 150 20% 96%;
+
+    --popover: 160 14% 9%;
+    --popover-foreground: 150 20% 96%;
+
+    --primary: 158 39% 30%;
+    --primary-foreground: 150 30% 98%;
+    --primary-glow: 152 22% 56%;
+
+    --secondary: 160 12% 14%;
+    --secondary-foreground: 150 20% 96%;
+
+    --muted: 160 10% 13%;
+    --muted-foreground: 150 8% 60%;
+
+    --accent: 152 22% 56%;
+    --accent-foreground: 160 14% 6%;
+
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 150 20% 98%;
+
+    --success: 142 60% 45%;
+    --warning: 38 92% 55%;
+
+    --border: 160 12% 16%;
+    --input: 160 12% 14%;
+    --ring: 158 39% 40%;
+
+    --radius: 0.875rem;
+
+    --gradient-hero: radial-gradient(ellipse at top, hsl(158 39% 30% / 0.35), transparent 60%), linear-gradient(180deg, hsl(160 14% 6%), hsl(160 14% 4%));
+    --gradient-primary: linear-gradient(135deg, hsl(158 39% 30%), hsl(152 22% 56%));
+    --gradient-card: linear-gradient(160deg, hsl(160 14% 11% / 0.8), hsl(160 14% 7% / 0.6));
+    --shadow-elegant: 0 20px 60px -20px hsl(158 39% 20% / 0.5);
+    --shadow-glow: 0 0 40px hsl(152 22% 56% / 0.25);
+
+    --sidebar-background: 160 14% 7%;
+    --sidebar-foreground: 150 20% 90%;
+    --sidebar-primary: 158 39% 30%;
+    --sidebar-primary-foreground: 150 20% 98%;
+    --sidebar-accent: 160 12% 12%;
+    --sidebar-accent-foreground: 150 20% 96%;
+    --sidebar-border: 160 12% 14%;
+    --sidebar-ring: 158 39% 40%;
+  }
+
+  .dark { color-scheme: dark; }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@layer base {
+  * { @apply border-border; }
+  html, body, #root { @apply min-h-screen; }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+    background-image:
+      radial-gradient(circle at 20% 0%, hsl(158 39% 30% / 0.12), transparent 40%),
+      radial-gradient(circle at 80% 100%, hsl(152 22% 56% / 0.08), transparent 50%);
+    background-attachment: fixed;
+  }
+  h1, h2, h3, h4, .font-display {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-card/60 backdrop-blur-xl border border-border/60;
+    background-image: var(--gradient-card);
+  }
+  .glass-hover {
+    @apply transition-all duration-300 hover:border-primary-glow/40 hover:shadow-[0_8px_30px_-10px_hsl(152_22%_56%_/_0.3)] hover:-translate-y-0.5;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(150 20% 98%), hsl(152 22% 70%));
+  }
+  .grid-bg {
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.4) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.4) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
 }
