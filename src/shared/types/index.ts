@@ -21,6 +21,7 @@ export type TrainingType = "scrim" | "vod-review" | "tatica" | "individual";
 
 export interface Player {
   id: string;
+  userId: string;
   nick: string;
   fullName?: string;
   role: string;
@@ -39,6 +40,7 @@ export interface Team {
   status: TeamStatus;
   members: string[];
   createdAt: string;
+  logoUrl?: string;
 }
 
 export interface Training {

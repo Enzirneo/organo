@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ImageUpload } from "@/shared/components/ui/ImageUpload";
 import { toast } from "sonner";
 
 export default function PlayersPage() {
@@ -51,9 +52,15 @@ export default function PlayersPage() {
               <DialogContent className="glass">
                 <DialogHeader><DialogTitle>Cadastrar jogador</DialogTitle></DialogHeader>
                 <div className="space-y-3">
+                  <ImageUpload
+                    value={form.image}
+                    onChange={(url) => setForm({ ...form, image: url })}
+                    bucket="avatars"
+                    placeholder="Foto do jogador"
+                    className="h-28 w-full"
+                  />
                   <Input placeholder="Nick" value={form.nick} onChange={(e) => setForm({ ...form, nick: e.target.value })} />
                   <Input placeholder="Função (ex: Duelista, IGL)" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} />
-                  <Input placeholder="URL da imagem (opcional)" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} />
                   <Select value={form.game} onValueChange={(v) => setForm({ ...form, game: v as GameId })}>
                     <SelectTrigger><SelectValue placeholder="Jogo" /></SelectTrigger>
                     <SelectContent>{GAMES.map(g => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}</SelectContent>

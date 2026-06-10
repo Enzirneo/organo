@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ImageUpload } from "@/shared/components/ui/ImageUpload";
 import { toast } from "sonner";
 
 export default function TeamsPage() {
@@ -39,6 +40,7 @@ export default function TeamsPage() {
     description: "",
     game: "valorant" as GameId,
     status: "ativo" as TeamStatus,
+    logoUrl: "",
   });
 
   const filtered = useMemo(
@@ -73,6 +75,7 @@ export default function TeamsPage() {
         description: "",
         game: "valorant",
         status: "ativo",
+        logoUrl: "",
       });
     } catch (error) {
       console.error("[TeamsPage] erro ao criar time:", error);
@@ -116,6 +119,14 @@ export default function TeamsPage() {
               </DialogHeader>
 
               <div className="space-y-3">
+                <ImageUpload
+                  value={form.logoUrl}
+                  onChange={(url) => setForm({ ...form, logoUrl: url })}
+                  bucket="team-logos"
+                  placeholder="Logo do time"
+                  className="h-28 w-full"
+                />
+
                 <Input
                   placeholder="Nome do time"
                   value={form.name}
@@ -223,47 +234,58 @@ export default function TeamsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ delay: i * 0.04 }}
-                className="glass glass-hover group relative rounded-2xl p-5"
+                className="glass glass-hover group relative rounded-2xl overflow-hidden"
               >
-                <div className="mb-3 flex items-start justify-between">
-                  <div>
-                    <p className="font-display flex items-center gap-2 text-lg">
-                      <StatusDot status={t.status} />
-                      {t.name}
-                    </p>
-
-                    <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                      {t.description}
-                    </p>
-                  </div>
+                {/* Header: logo ou fundo padrão */}
+                <div className="relative h-32 overflow-hidden">
+                  {t.logoUrl ? (
+                    <img
+                      src={t.logoUrl}
+                      alt={t.name}
+                      className="size-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                  ) : (
+                    <div className="size-full bg-gradient-to-br from-primary/20 via-card to-card" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
 
                   <button
                     onClick={() => removeTeam(t.id)}
-                    className="text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100"
+                    className="absolute top-3 right-3 grid place-items-center size-7 rounded-full bg-background/70 backdrop-blur text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-destructive transition"
                   >
-                    <Trash2 className="size-4" />
+                    <Trash2 className="size-3.5" />
                   </button>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between">
-                  <div className="flex -space-x-2">
-                    {teamPlayers.map((p) => (
-                      <img
-                        key={p.id}
-                        src={p.image}
-                        alt={p.nick}
-                        className="size-8 rounded-full border-2 border-background object-cover"
-                      />
-                    ))}
+                {/* Conteúdo */}
+                <div className="p-5 -mt-2">
+                  <p className="font-display flex items-center gap-2 text-lg leading-tight">
+                    <StatusDot status={t.status} />
+                    {t.name}
+                  </p>
 
-                    {teamPlayers.length === 0 && (
-                      <span className="text-xs text-muted-foreground">
-                        Sem jogadores
-                      </span>
-                    )}
+                  <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                    {t.description}
+                  </p>
+
+                  <div className="mt-4 flex items-center justify-between">
+                    <div className="flex -space-x-2">
+                      {teamPlayers.map((p) => (
+                        <img
+                          key={p.id}
+                          src={p.image}
+                          alt={p.nick}
+                          className="size-8 rounded-full border-2 border-background object-cover"
+                        />
+                      ))}
+                      {teamPlayers.length === 0 && (
+                        <span className="text-xs text-muted-foreground">
+                          Sem jogadores
+                        </span>
+                      )}
+                    </div>
+                    <GameBadge game={t.game} />
                   </div>
-
-                  <GameBadge game={t.game} />
                 </div>
               </motion.article>
             );

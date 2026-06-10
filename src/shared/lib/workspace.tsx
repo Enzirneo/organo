@@ -143,7 +143,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     try {
       const { data: teamsData, error: teamsError } = await supabase
         .from("teams")
-        .select("id, name, description, game_id, status, created_at")
+        .select("id, name, description, game_id, status, logo_url, created_at")
         .order("created_at", { ascending: false });
 
       if (teamsError) throw teamsError;
@@ -156,11 +156,12 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         status: fromDbTeamStatus(team.status),
         members: [],
         createdAt: String(team.created_at).slice(0, 10),
+        logoUrl: team.logo_url ?? undefined,
       }));
 
       const { data: accountsData, error: accountsError } = await supabase
         .from("game_accounts")
-        .select("id, user_id, game_id, nickname, rank, created_at")
+        .select("id, user_id, game_id, nickname, rank, avatar_url, created_at")
         .order("created_at", { ascending: false });
 
       if (accountsError) throw accountsError;
@@ -185,10 +186,11 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         const member = teamByUser.get(account.user_id);
         return {
           id: account.id,
+          userId: account.user_id,
           nick: account.nickname,
           fullName: undefined,
           role: member?.position || account.rank || "Player",
-          image: `https://i.pravatar.cc/200?u=${account.id}`,
+          image: account.avatar_url || `https://i.pravatar.cc/200?u=${account.id}`,
           game: account.game_id as GameId,
           teamId: member?.teamId,
           status: member?.status === "inactive" ? "afastado" : "ativo",
@@ -265,8 +267,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       const createdTeamId = Array.isArray(data) ? data[0]?.team_id : data?.team_id;
-      if (createdTeamId) {
-        console.info("[Organo] Time criado via RPC:", createdTeamId);
+
+      if (createdTeamId && team.logoUrl) {
+        await supabase.from("teams").update({ logo_url: team.logoUrl }).eq("id", createdTeamId);
       }
 
       await refresh();
@@ -279,6 +282,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         game_id: player.game,
         nickname: player.nick,
         rank: player.role,
+        avatar_url: player.image || null,
       });
 
       if (error) throw error;

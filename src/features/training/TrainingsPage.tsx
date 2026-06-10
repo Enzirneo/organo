@@ -4,7 +4,6 @@ import { Plus, CalendarRange, Target, Video, Brain, Crosshair } from "lucide-rea
 import { PageHeader } from "@/shared/components/ui/PageHeader";
 import { GameBadge } from "@/shared/components/ui/GameBadge";
 import { useWorkspace } from "@/shared/lib/workspace";
-import { GAMES } from "@/shared/data/games";
 import type { GameId, TrainingType } from "@/shared/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,15 +19,45 @@ const typeMeta: Record<TrainingType, { label: string; icon: any; color: string }
   individual: { label: "Individual", icon: Target, color: "text-accent" },
 };
 
+const EMPTY_FORM = {
+  title: "", date: new Date().toISOString().slice(0, 10), time: "20:00",
+  game: "valorant" as GameId, objective: "", type: "scrim" as TrainingType, teamId: "", participants: [] as string[],
+};
+
 export default function TrainingsPage() {
-  const { trainings, teams, addTraining } = useWorkspace();
+  const { trainings, teams, players, addTraining } = useWorkspace();
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({
-    title: "", date: new Date().toISOString().slice(0,10), time: "20:00",
-    game: "valorant" as GameId, objective: "", type: "scrim" as TrainingType, teamId: "", participants: [] as string[],
-  });
+  const [form, setForm] = useState(EMPTY_FORM);
 
   const sorted = useMemo(() => [...trainings].sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time)), [trainings]);
+
+  const teamPlayers = useMemo(
+    () => form.teamId ? players.filter(p => p.teamId === form.teamId) : [],
+    [players, form.teamId]
+  );
+
+  const allSelected = teamPlayers.length > 0 && teamPlayers.every(p => form.participants.includes(p.userId));
+
+  const handleTeamChange = (teamId: string) => {
+    const team = teams.find(t => t.id === teamId);
+    setForm(f => ({ ...f, teamId, game: team?.game ?? f.game, participants: [] }));
+  };
+
+  const toggleParticipant = (userId: string) => {
+    setForm(f => ({
+      ...f,
+      participants: f.participants.includes(userId)
+        ? f.participants.filter(id => id !== userId)
+        : [...f.participants, userId],
+    }));
+  };
+
+  const toggleAll = () => {
+    setForm(f => ({
+      ...f,
+      participants: allSelected ? [] : teamPlayers.map(p => p.userId),
+    }));
+  };
 
   const submit = async () => {
     if (!form.title || !form.objective) return toast.error("Preencha título e objetivo");
@@ -36,6 +65,7 @@ export default function TrainingsPage() {
       await addTraining(form);
       toast.success("Treino agendado");
       setOpen(false);
+      setForm(EMPTY_FORM);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Não foi possível agendar o treino");
     }
@@ -62,10 +92,6 @@ export default function TrainingsPage() {
                     <Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
                     <Input type="time" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} />
                   </div>
-                  <Select value={form.game} onValueChange={(v) => setForm({ ...form, game: v as GameId })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>{GAMES.map(g => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}</SelectContent>
-                  </Select>
                   <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v as TrainingType })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -75,12 +101,45 @@ export default function TrainingsPage() {
                       <SelectItem value="individual">Individual</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select value={form.teamId} onValueChange={(v) => setForm({ ...form, teamId: v })}>
-                    <SelectTrigger><SelectValue placeholder="Time" /></SelectTrigger>
+                  <Select value={form.teamId} onValueChange={handleTeamChange}>
+                    <SelectTrigger><SelectValue placeholder="Selecionar time" /></SelectTrigger>
                     <SelectContent>
-                      {teams.filter(t => t.game === form.game).map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
+                      {teams.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
+                  {teamPlayers.length > 0 && (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-muted-foreground">Participantes</p>
+                        <button
+                          type="button"
+                          onClick={toggleAll}
+                          className="text-xs text-primary-glow hover:underline"
+                        >
+                          {allSelected ? "Desmarcar todos" : "Selecionar todos"}
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {teamPlayers.map(p => {
+                          const selected = form.participants.includes(p.userId);
+                          return (
+                            <button
+                              key={p.id}
+                              type="button"
+                              onClick={() => toggleParticipant(p.userId)}
+                              className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${
+                                selected
+                                  ? "border-transparent bg-gradient-primary text-primary-foreground shadow-glow"
+                                  : "border-border/60 bg-card/40 text-muted-foreground hover:text-foreground"
+                              }`}
+                            >
+                              {p.nick}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                   <Textarea placeholder="Objetivo" value={form.objective} onChange={(e) => setForm({ ...form, objective: e.target.value })} />
                 </div>
                 <DialogFooter>
