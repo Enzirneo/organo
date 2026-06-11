@@ -13,6 +13,7 @@ import PlayersPage from "./features/players/PlayersPage";
 import TrainingsPage from "./features/training/TrainingsPage";
 import AuthPage from "./features/auth/AuthPage";
 import AuthCallback from "./features/auth/AuthCallback";
+import AcceptInvitePage from "./features/invites/AcceptInvitePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/invite/:token" element={<AcceptInvitePage />} />
 
             <Route
               path="/app/*"

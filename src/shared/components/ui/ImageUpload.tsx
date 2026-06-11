@@ -16,6 +16,10 @@ export function ImageUpload({ value, onChange, bucket, placeholder = "Carregar i
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = async (file: File) => {
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Arquivo muito grande. O limite é 5MB.");
+      return;
+    }
     setUploading(true);
     try {
       const ext = file.name.split(".").pop() ?? "jpg";
@@ -23,14 +27,15 @@ export function ImageUpload({ value, onChange, bucket, placeholder = "Carregar i
 
       const { error: uploadError } = await supabase.storage
         .from(bucket)
-        .upload(path, file, { upsert: true });
+        .upload(path, file);
 
       if (uploadError) throw uploadError;
 
       const { data } = supabase.storage.from(bucket).getPublicUrl(path);
       onChange(data.publicUrl);
-    } catch {
-      toast.error("Erro ao enviar imagem");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erro ao enviar imagem";
+      toast.error(msg);
     } finally {
       setUploading(false);
     }

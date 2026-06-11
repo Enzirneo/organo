@@ -1,3 +1,5 @@
+export type TeamRole = "owner" | "leader" | "coach" | "analyst" | "player";
+
 export type GameId =
   | "valorant"
   | "lol"
@@ -41,6 +43,7 @@ export interface Team {
   members: string[];
   createdAt: string;
   logoUrl?: string;
+  myRole?: TeamRole;
 }
 
 export interface Training {
